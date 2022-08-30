@@ -38,10 +38,10 @@ def _init_():
         os.makedirs('outputs/'+args.exp_name)
     if not os.path.exists('outputs/'+args.exp_name+'/'+'models'):
         os.makedirs('outputs/'+args.exp_name+'/'+'models')
-    os.system('cp main_semseg.py outputs'+'/'+args.exp_name+'/'+'main_semseg.py.backup')
-    os.system('cp model.py outputs' + '/' + args.exp_name + '/' + 'model.py.backup')
-    os.system('cp util.py outputs' + '/' + args.exp_name + '/' + 'util.py.backup')
-    os.system('cp data.py outputs' + '/' + args.exp_name + '/' + 'data.py.backup')
+    # os.system('copy main_semseg.py outputs'+'/'+args.exp_name+'/'+'main_semseg.py.backup')
+    # os.system('copy model.py outputs' + '/' + args.exp_name + '/' + 'model.py.backup')
+    # os.system('copy util.py outputs' + '/' + args.exp_name + '/' + 'util.py.backup')
+    # os.system('copy data.py outputs' + '/' + args.exp_name + '/' + 'data.py.backup')
 
 
 def calculate_sem_IoU(pred_np, seg_np, visual=False):
@@ -133,7 +133,7 @@ def visualization(visu, visu_format, test_choice, data, seg, pred, visual_file_i
                     vertex = PlyElement.describe(np.array(xyzRGB_gt, dtype=[('x', 'f4'), ('y', 'f4'), ('z', 'f4'), ('red', 'u1'), ('green', 'u1'), ('blue', 'u1')]), 'vertex')
                     PlyData([vertex]).write(filepath_gt)
                     print('PLY visualization file saved in', filepath_gt)
-                    os.system('rm -rf '+'outputs/'+args.exp_name+'/visualization/area_'+test_area+'/'+roomname+'/*.txt')
+                    os.system('del -rf '+'outputs/'+args.exp_name+'/visualization/area_'+test_area+'/'+roomname+'/*.txt')
                 else:
                     filename = 'outputs/'+args.exp_name+'/'+'visualization'+'/'+'area_'+test_area+'/'+roomname+'/'+roomname+'.txt'
                     filename_gt = 'outputs/'+args.exp_name+'/'+'visualization'+'/'+'area_'+test_area+'/'+roomname+'/'+roomname+'_gt.txt'
@@ -365,14 +365,14 @@ def test(args, io):
 if __name__ == "__main__":
     # Training settings
     parser = argparse.ArgumentParser(description='Point Cloud Part Segmentation')
-    parser.add_argument('--exp_name', type=str, default='exp', metavar='N',
+    parser.add_argument('--exp_name', type=str, default='semseg_6', metavar='N',
                         help='Name of the experiment')
     parser.add_argument('--model', type=str, default='dgcnn', metavar='N',
                         choices=['dgcnn'],
                         help='Model to use, [dgcnn]')
     parser.add_argument('--dataset', type=str, default='S3DIS', metavar='N',
                         choices=['S3DIS'])
-    parser.add_argument('--test_area', type=str, default=None, metavar='N',
+    parser.add_argument('--test_area', type=str, default=6, metavar='N',
                         choices=['1', '2', '3', '4', '5', '6', 'all'])
     parser.add_argument('--batch_size', type=int, default=32, metavar='batch_size',
                         help='Size of batch)')

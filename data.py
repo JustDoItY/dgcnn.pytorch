@@ -147,9 +147,16 @@ def load_data_semseg(partition, test_area):
         label = file["label"][:]
         data_batchlist.append(data)
         label_batchlist.append(label)
-    data_batches = np.concatenate(data_batchlist, 0)
-    seg_batches = np.concatenate(label_batchlist, 0)
-    test_area_name = "Area_" + test_area
+    if len(data_batchlist) != 0:
+        data_batches = np.concatenate(data_batchlist, 0)
+    else:
+        data_batches = data_batchlist
+
+    if len(label_batchlist) != 0:
+        seg_batches = np.concatenate(label_batchlist, 0)
+    else:
+        seg_batches = label_batchlist
+    test_area_name = "Area_%d"% (test_area)
     train_idxs, test_idxs = [], []
     for i, room_name in enumerate(room_filelist):
         if test_area_name in room_name:
