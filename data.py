@@ -349,11 +349,11 @@ class S3DIS(Dataset):
     def __getitem__(self, item):
         pointcloud = self.data[item][:self.num_points]
         seg = self.seg[item][:self.num_points]
-        if self.partition == 'train':
-            indices = list(range(pointcloud.shape[0]))
-            np.random.shuffle(indices)
-            pointcloud = pointcloud[indices]
-            seg = seg[indices]
+        # if self.partition == 'train':
+        indices = list(range(pointcloud.shape[0]))
+        np.random.shuffle(indices)
+        pointcloud = pointcloud[indices]
+        seg = seg[indices]
         seg = torch.LongTensor(seg)
         return pointcloud, seg
 

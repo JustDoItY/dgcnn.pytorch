@@ -295,7 +295,7 @@ def test(args, io):
                     if (line[5]) == test_area:
                         break
                     visual_file_index = visual_file_index + 1
-        if (args.test_area == 'all') or (test_area == args.test_area):
+        if (args.test_area == 'all') or (int(test_area) == int(args.test_area)):
             test_loader = DataLoader(S3DIS(partition='test', num_points=args.num_points, test_area=test_area),
                                      batch_size=args.test_batch_size, shuffle=False, drop_last=False)
 
@@ -309,7 +309,9 @@ def test(args, io):
                 raise Exception("Not implemented")
                 
             model = nn.DataParallel(model)
-            model.load_state_dict(torch.load(os.path.join(args.model_root, 'model_%s.t7' % test_area)))
+            # model.load_state_dict(torch.load(os.path.join(args.model_root, 'model_%s.t7' % test_area)))
+            model.load_state_dict(torch.load(os.path.join(args.model_root, 'model_6.t7')))
+
             model = model.eval()
             test_acc = 0.0
             count = 0.0
@@ -370,14 +372,14 @@ def test(args, io):
 if __name__ == "__main__":
     # Training settings
     parser = argparse.ArgumentParser(description='Point Cloud Part Segmentation')
-    parser.add_argument('--exp_name', type=str, default='base_seg_6', metavar='N',
+    parser.add_argument('--exp_name', type=str, default='pretrained', metavar='N',
                         help='Name of the experiment')
     parser.add_argument('--model', type=str, default='dgcnn', metavar='N',
                         choices=['dgcnn'],
                         help='Model to use, [dgcnn]')
     parser.add_argument('--dataset', type=str, default='S3DIS', metavar='N',
                         choices=['S3DIS'])
-    parser.add_argument('--test_area', type=str, default=6, metavar='N',
+    parser.add_argument('--test_area', type=str, default='all', metavar='N',
                         choices=['1', '2', '3', '4', '5', '6', 'all'])
     parser.add_argument('--batch_size', type=int, default=10, metavar='batch_size',
                         help='Size of batch)')
@@ -398,7 +400,7 @@ if __name__ == "__main__":
                         help='enables CUDA training')
     parser.add_argument('--seed', type=int, default=1, metavar='S',
                         help='random seed (default: 1)')
-    parser.add_argument('--eval', type=bool,  default=False,
+    parser.add_argument('--eval', type=bool,  default=True,
                         help='evaluate the model')
     parser.add_argument('--num_points', type=int, default=4096,
                         help='num of points to use')
@@ -408,7 +410,7 @@ if __name__ == "__main__":
                         help='Dimension of embeddings')
     parser.add_argument('--k', type=int, default=20, metavar='N',
                         help='Num of nearest neighbors to use')
-    parser.add_argument('--model_root', type=str, default='', metavar='N',
+    parser.add_argument('--model_root', type=str, default='pretrained/semseg/', metavar='N',
                         help='Pretrained model root')
     parser.add_argument('--visu', type=str, default='',
                         help='visualize the model')

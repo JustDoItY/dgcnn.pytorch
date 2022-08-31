@@ -40,3 +40,17 @@ Train 18, loss: 1.140193, train acc: 0.939512, train avg acc: 0.868776, train io
 Test 18, loss: 1.240139, test acc: 0.880243, test avg acc: 0.795737, test iou: 0.686686
 Train 19, loss: 1.136504, train acc: 0.941383, train avg acc: 0.874973, train iou: 0.808905
 Test 19, loss: 1.235264, test acc: 0.881165, test avg acc: 0.799715, test iou: 0.691984
+Namespace(batch_size=10, dataset='S3DIS', dropout=0.5, emb_dims=1024, epochs=20, eval=True, exp_name='base_seg_6', k=20, lr=0.001, model='dgcnn', model_root='outputs/base_seg_6/models/', momentum=0.9, no_cuda=False, num_points=4096, scheduler='cos', seed=1, test_area=6, test_batch_size=10, use_sgd=True, visu='rea_6_office_1', visu_format='ply')
+Using GPU : 0 from 1 devices
+Test :: test area: 6, test acc: 0.881028, test avg acc: 0.799465, test iou: 0.691610
+Namespace(batch_size=10, dataset='S3DIS', dropout=0.5, emb_dims=1024, epochs=20, eval=True, exp_name='base_seg_6', k=20, lr=0.001, model='dgcnn', model_root='outputs/base_seg_6/models/', momentum=0.9, no_cuda=False, num_points=4096, scheduler='cos', seed=1, test_area='all', test_batch_size=10, use_sgd=True, visu='rea_6_office_1', visu_format='ply')
+Using GPU : 0 from 1 devices
+Namespace(batch_size=10, dataset='S3DIS', dropout=0.5, emb_dims=1024, epochs=20, eval=True, exp_name='base_seg_6', k=20, lr=0.001, model='dgcnn', model_root='outputs/base_seg_6/models/', momentum=0.9, no_cuda=False, num_points=4096, scheduler='cos', seed=1, test_area='all', test_batch_size=10, use_sgd=True, visu='rea_6_office_1', visu_format='ply')
+Using GPU : 0 from 1 devices
+Test :: test area: 1, test acc: 0.928594, test avg acc: 0.883490, test iou: 0.802388
+Test :: test area: 2, test acc: 0.948513, test avg acc: 0.881369, test iou: 0.802059
+Test :: test area: 3, test acc: 0.935212, test avg acc: 0.901747, test iou: 0.818533
+Test :: test area: 4, test acc: 0.917581, test avg acc: 0.863459, test iou: 0.775346
+Test :: test area: 5, test acc: 0.931009, test avg acc: 0.812929, test iou: 0.742409
+Test :: test area: 6, test acc: 0.881047, test avg acc: 0.799475, test iou: 0.691770
+Overall Test :: test acc: 0.924655, test avg acc: 0.866626, test iou: 0.783357
