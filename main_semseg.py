@@ -16,13 +16,14 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torch.optim.lr_scheduler import CosineAnnealingLR, StepLR
-from data import S3DIS
-from model import DGCNN_semseg
 import numpy as np
 from torch.utils.data import DataLoader
 from util import cal_loss, IOStream
 import sklearn.metrics as metrics
 from plyfile import PlyData, PlyElement
+from data import S3DIS
+from model import DGCNN_semseg
+from tqdm import tqdm
 
 global room_seg
 room_seg = []
@@ -184,6 +185,7 @@ def train(args, io):
         ####################
         # Train
         ####################
+        print('train, 第',epoch,'轮')
         train_loss = 0.0
         count = 0.0
         model.train()
@@ -192,7 +194,7 @@ def train(args, io):
         train_true_seg = []
         train_pred_seg = []
         train_label_seg = []
-        for data, seg in train_loader:
+        for data, seg in tqdm(train_loader):
             data, seg = data.to(device), seg.to(device)
             data = data.permute(0, 2, 1)
             batch_size = data.size()[0]
@@ -236,6 +238,7 @@ def train(args, io):
         ####################
         # Test
         ####################
+        print('test, 第', epoch, '轮')
         test_loss = 0.0
         count = 0.0
         model.eval()
@@ -243,11 +246,12 @@ def train(args, io):
         test_pred_cls = []
         test_true_seg = []
         test_pred_seg = []
-        for data, seg in test_loader:
+        for data, seg in tqdm(test_loader):
             data, seg = data.to(device), seg.to(device)
             data = data.permute(0, 2, 1)
             batch_size = data.size()[0]
-            seg_pred = model(data)
+            with torch.no_grad():
+                seg_pred = model(data)
             seg_pred = seg_pred.permute(0, 2, 1).contiguous()
             loss = criterion(seg_pred.view(-1, 13), seg.view(-1,1).squeeze())
             pred = seg_pred.max(dim=2)[1]
@@ -317,7 +321,8 @@ def test(args, io):
                 data, seg = data.to(device), seg.to(device)
                 data = data.permute(0, 2, 1)
                 batch_size = data.size()[0]
-                seg_pred = model(data)
+                with torch.no_grad():
+                    seg_pred = model(data)
                 seg_pred = seg_pred.permute(0, 2, 1).contiguous()
                 pred = seg_pred.max(dim=2)[1] 
                 seg_np = seg.cpu().numpy()
@@ -365,7 +370,7 @@ def test(args, io):
 if __name__ == "__main__":
     # Training settings
     parser = argparse.ArgumentParser(description='Point Cloud Part Segmentation')
-    parser.add_argument('--exp_name', type=str, default='semseg_6', metavar='N',
+    parser.add_argument('--exp_name', type=str, default='base_seg_6', metavar='N',
                         help='Name of the experiment')
     parser.add_argument('--model', type=str, default='dgcnn', metavar='N',
                         choices=['dgcnn'],
@@ -374,11 +379,11 @@ if __name__ == "__main__":
                         choices=['S3DIS'])
     parser.add_argument('--test_area', type=str, default=6, metavar='N',
                         choices=['1', '2', '3', '4', '5', '6', 'all'])
-    parser.add_argument('--batch_size', type=int, default=32, metavar='batch_size',
+    parser.add_argument('--batch_size', type=int, default=10, metavar='batch_size',
                         help='Size of batch)')
-    parser.add_argument('--test_batch_size', type=int, default=16, metavar='batch_size',
+    parser.add_argument('--test_batch_size', type=int, default=10, metavar='batch_size',
                         help='Size of batch)')
-    parser.add_argument('--epochs', type=int, default=100, metavar='N',
+    parser.add_argument('--epochs', type=int, default=20, metavar='N',
                         help='number of episode to train ')
     parser.add_argument('--use_sgd', type=bool, default=True,
                         help='Use SGD')

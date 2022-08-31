@@ -156,7 +156,7 @@ def load_data_semseg(partition, test_area):
         seg_batches = np.concatenate(label_batchlist, 0)
     else:
         seg_batches = label_batchlist
-    test_area_name = "Area_%d"% (test_area)
+    test_area_name = "Area_" + str(test_area)
     train_idxs, test_idxs = [], []
     for i, room_name in enumerate(room_filelist):
         if test_area_name in room_name:

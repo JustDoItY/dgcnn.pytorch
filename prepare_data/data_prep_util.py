@@ -1,5 +1,14 @@
 import os
 import sys
+def pathJoin(*args):
+    path = ''
+
+    for sub in args:
+        sub = str(sub).replace('\\', '/')
+        path += '/' + sub
+    return path[1:]
+
+os.path.join = pathJoin
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(BASE_DIR)
 from plyfile import (PlyData, PlyElement, make2d, PlyParseError, PlyProperty)
