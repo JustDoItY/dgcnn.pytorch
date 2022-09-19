@@ -309,8 +309,8 @@ def test(args, io):
                 raise Exception("Not implemented")
                 
             model = nn.DataParallel(model)
-            # model.load_state_dict(torch.load(os.path.join(args.model_root, 'model_%s.t7' % test_area)))
-            model.load_state_dict(torch.load(os.path.join(args.model_root, 'model_6.t7')))
+            model.load_state_dict(torch.load(os.path.join(args.model_root, 'model_%s.t7' % test_area)))
+            # model.load_state_dict(torch.load(os.path.join(args.model_root, 'model_6.t7')))
 
             model = model.eval()
             test_acc = 0.0
