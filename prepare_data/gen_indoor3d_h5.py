@@ -1,15 +1,6 @@
 import os
 import numpy as np
 import sys
-def pathJoin(*args):
-    path = ''
-
-    for sub in args:
-        sub = str(sub).replace('\\', '/')
-        path += '/' + sub
-    return path[1:]
-
-os.path.join = pathJoin
 import json
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.dirname(BASE_DIR)

@@ -1,12 +1,10 @@
+"""
+@Time: 2022/11/15 9:46 下午
+@Auth: zanguokuan
+@Contact: zgkmdq@qq.com
+"""
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-@Author: An Tao, Pengliang Ji
-@Contact: ta19@mails.tsinghua.edu.cn, jpl1723@buaa.edu.cn
-@File: main_semseg.py
-@Time: 2021/7/20 7:49 PM
-"""
-
 
 from __future__ import print_function
 import os
@@ -59,7 +57,7 @@ def calculate_sem_IoU(pred_np, seg_np, visual=False):
             if U_all[sem] == 0:
                 I_all[sem] = 1
                 U_all[sem] = 1
-    return I_all / U_all 
+    return I_all / U_all
 
 
 def visualization(visu, visu_format, test_choice, data, seg, pred, visual_file_index, semseg_colors):
@@ -68,7 +66,7 @@ def visualization(visu, visu_format, test_choice, data, seg, pred, visual_file_i
     visu = visu.split('_')
     for i in range(0, data.shape[0]):
         RGB = []
-        RGB_gt = [] 
+        RGB_gt = []
         skip = False
         with open("data/indoor3d_sem_seg_hdf5_data_test/room_filelist.txt") as f:
             files = f.readlines()
@@ -81,14 +79,14 @@ def visualization(visu, visu_format, test_choice, data, seg, pred, visual_file_i
         if visu[0] != 'all':
             if len(visu) == 2:
                 if visu[0] != 'area' or visu[1] != test_area:
-                    skip = True 
+                    skip = True
                 else:
                     visual_warning = False
             elif len(visu) == 4:
                 if visu[0] != 'area' or visu[1] != test_area or visu[2] != roomname.split('_')[0] or visu[3] != roomname.split('_')[1]:
                     skip = True
                 else:
-                    visual_warning = False  
+                    visual_warning = False
             else:
                 skip = True
         elif test_choice !='all':
@@ -100,7 +98,7 @@ def visualization(visu, visu_format, test_choice, data, seg, pred, visual_file_i
         else:
             if not os.path.exists('outputs/'+args.exp_name+'/'+'visualization'+'/'+'area_'+test_area+'/'+roomname):
                 os.makedirs('outputs/'+args.exp_name+'/'+'visualization'+'/'+'area_'+test_area+'/'+roomname)
-            
+
             data = np.loadtxt('data/indoor3d_sem_seg_hdf5_data_test/raw_data3d/Area_'+test_area+'/'+roomname+'('+str(visual_file_index)+').txt')
             visual_file_index = visual_file_index + 1
             for j in range(0, data.shape[0]):
@@ -110,12 +108,12 @@ def visualization(visu, visu_format, test_choice, data, seg, pred, visual_file_i
             xyzRGB = np.concatenate((data, np.array(RGB)), axis=1)
             xyzRGB_gt = np.concatenate((data, np.array(RGB_gt)), axis=1)
             room_seg.append(seg[i].cpu().numpy())
-            room_pred.append(pred[i].cpu().numpy()) 
+            room_pred.append(pred[i].cpu().numpy())
             f = open('outputs/'+args.exp_name+'/'+'visualization'+'/'+'area_'+test_area+'/'+roomname+'/'+roomname+'.txt', "a")
             f_gt = open('outputs/'+args.exp_name+'/'+'visualization'+'/'+'area_'+test_area+'/'+roomname+'/'+roomname+'_gt.txt', "a")
-            np.savetxt(f, xyzRGB, fmt='%s', delimiter=' ') 
-            np.savetxt(f_gt, xyzRGB_gt, fmt='%s', delimiter=' ') 
-            
+            np.savetxt(f, xyzRGB, fmt='%s', delimiter=' ')
+            np.savetxt(f_gt, xyzRGB_gt, fmt='%s', delimiter=' ')
+
             if roomname != roomname_next:
                 mIoU = np.mean(calculate_sem_IoU(np.array(room_pred), np.array(room_seg), visual=True))
                 mIoU = str(round(mIoU, 4))
@@ -144,17 +142,17 @@ def visualization(visu, visu_format, test_choice, data, seg, pred, visual_file_i
                     print('TXT visualization file saved in', filename_gt)
             elif visu_format != 'ply' and visu_format != 'txt':
                 print('ERROR!! Unknown visualization format: %s, please use txt or ply.' % \
-                (visu_format))
+                      (visu_format))
                 exit()
-            
-        
+
+
 def train(args, io):
     train_loader = DataLoader(S3DISDataset(split='train', num_points=args.num_points, test_area=args.test_area),
                               num_workers=8, batch_size=args.batch_size, shuffle=True, drop_last=True)
     test_loader = DataLoader(S3DISDataset(split='test', num_points=args.num_points, test_area=args.test_area),
-                            num_workers=8, batch_size=args.test_batch_size, shuffle=True, drop_last=False)
+                             num_workers=8, batch_size=args.test_batch_size, shuffle=True, drop_last=False)
 
-    device = torch.device("cuda" if args.cuda else "cpu")
+    device = torch.device("npu" if args.cuda else "cpu")
 
     #Try to load models
     if args.model == 'dgcnn':
@@ -164,7 +162,7 @@ def train(args, io):
     print(str(model))
 
     model = nn.DataParallel(model)
-    print("Let's use", torch.cuda.device_count(), "GPUs!")
+    print("Let's use", torch.npu.device_count(), "NPUs!")
 
     if args.use_sgd:
         print("Use SGD")
@@ -228,7 +226,7 @@ def train(args, io):
         train_true_seg = np.concatenate(train_true_seg, axis=0)
         train_pred_seg = np.concatenate(train_pred_seg, axis=0)
         train_ious = calculate_sem_IoU(train_pred_seg, train_true_seg)
-        outstr = 'Train %d, loss: %.6f, train acc: %.6f, train avg acc: %.6f, train iou: %.6f' % (epoch, 
+        outstr = 'Train %d, loss: %.6f, train acc: %.6f, train avg acc: %.6f, train iou: %.6f' % (epoch,
                                                                                                   train_loss*1.0/count,
                                                                                                   train_acc,
                                                                                                   avg_per_class_acc,
@@ -300,14 +298,14 @@ def test(args, io):
                                      batch_size=args.test_batch_size, shuffle=False, drop_last=False)
 
             device = torch.device("cuda" if args.cuda else "cpu")
-                        
+
             #Try to load models
             semseg_colors = test_loader.dataset.semseg_colors
             if args.model == 'dgcnn':
                 model = DGCNN_semseg(args).to(device)
             else:
                 raise Exception("Not implemented")
-                
+
             model = nn.DataParallel(model)
             model.load_state_dict(torch.load(os.path.join(args.model_root, 'model_%s.t7' % test_area)))
             # model.load_state_dict(torch.load(os.path.join(args.model_root, 'model_6.t7')))
@@ -326,7 +324,7 @@ def test(args, io):
                 with torch.no_grad():
                     seg_pred = model(data)
                 seg_pred = seg_pred.permute(0, 2, 1).contiguous()
-                pred = seg_pred.max(dim=2)[1] 
+                pred = seg_pred.max(dim=2)[1]
                 seg_np = seg.cpu().numpy()
                 pred_np = pred.detach().cpu().numpy()
                 test_true_cls.append(seg_np.reshape(-1))
@@ -334,7 +332,7 @@ def test(args, io):
                 test_true_seg.append(seg_np)
                 test_pred_seg.append(pred_np)
                 # visiualization
-                visualization(args.visu, args.visu_format, args.test_area, data, seg, pred, visual_file_index, semseg_colors) 
+                visualization(args.visu, args.visu_format, args.test_area, data, seg, pred, visual_file_index, semseg_colors)
                 visual_file_index = visual_file_index + data.shape[0]
             if visual_warning and args.visu != '':
                 print('Visualization Failed: You can only choose a room to visualize within the scope of the test area')
@@ -372,20 +370,20 @@ def test(args, io):
 if __name__ == "__main__":
     # Training settings
     parser = argparse.ArgumentParser(description='Point Cloud Part Segmentation')
-    parser.add_argument('--exp_name', type=str, default='pretrained', metavar='N',
+    parser.add_argument('--exp_name', type=str, default='exp', metavar='N',
                         help='Name of the experiment')
     parser.add_argument('--model', type=str, default='dgcnn', metavar='N',
                         choices=['dgcnn'],
                         help='Model to use, [dgcnn]')
     parser.add_argument('--dataset', type=str, default='S3DIS', metavar='N',
                         choices=['S3DIS'])
-    parser.add_argument('--test_area', type=str, default='all', metavar='N',
+    parser.add_argument('--test_area', type=str, default=5, metavar='N',
                         choices=['1', '2', '3', '4', '5', '6', 'all'])
-    parser.add_argument('--batch_size', type=int, default=10, metavar='batch_size',
+    parser.add_argument('--batch_size', type=int, default=6, metavar='batch_size',
                         help='Size of batch)')
-    parser.add_argument('--test_batch_size', type=int, default=10, metavar='batch_size',
+    parser.add_argument('--test_batch_size', type=int, default=1, metavar='batch_size',
                         help='Size of batch)')
-    parser.add_argument('--epochs', type=int, default=20, metavar='N',
+    parser.add_argument('--epochs', type=int, default=100, metavar='N',
                         help='number of episode to train ')
     parser.add_argument('--use_sgd', type=bool, default=True,
                         help='Use SGD')
@@ -423,14 +421,14 @@ if __name__ == "__main__":
     io = IOStream('outputs/' + args.exp_name + '/run.log')
     io.cprint(str(args))
 
-    args.cuda = not args.no_cuda and torch.cuda.is_available()
+    args.cuda = not args.no_cuda and torch.npu.is_available()
     torch.manual_seed(args.seed)
     if args.cuda:
         io.cprint(
-            'Using GPU : ' + str(torch.cuda.current_device()) + ' from ' + str(torch.cuda.device_count()) + ' devices')
-        torch.cuda.manual_seed(args.seed)
+            'Using NPU : ' + str(torch.npu.current_device()) + ' from ' + str(torch.npu.device_count()) + ' devices')
+        torch.npu.manual_seed(args.seed)
     else:
-        io.cprint('Using CPU')
+        io.cprint('Using NPU')
 
     if not args.eval:
         train(args, io)

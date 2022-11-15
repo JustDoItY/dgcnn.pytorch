@@ -1,14 +1,5 @@
 import os
 import sys
-def pathJoin(*args):
-    path = ''
-
-    for sub in args:
-        sub = str(sub).replace('\\', '/')
-        path += '/' + sub
-    return path[1:]
-
-os.path.join = pathJoin
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.dirname(BASE_DIR)
 DATA_PATH = os.path.join(ROOT_DIR, 'data/Stanford3dDataset_v1.2_Aligned_Version')

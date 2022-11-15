@@ -2,15 +2,6 @@ import numpy as np
 import glob
 import os
 import sys
-def pathJoin(*args):
-    path = ''
-
-    for sub in args:
-        sub = str(sub).replace('\\', '/')
-        path += '/' + sub
-    return path[1:]
-
-os.path.join = pathJoin
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.dirname(BASE_DIR)
 sys.path.append(BASE_DIR)
