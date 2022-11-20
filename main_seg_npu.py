@@ -107,8 +107,8 @@ def visualization(visu, visu_format, test_choice, data, seg, pred, visual_file_i
             data = data[:,[1,2,0]]
             xyzRGB = np.concatenate((data, np.array(RGB)), axis=1)
             xyzRGB_gt = np.concatenate((data, np.array(RGB_gt)), axis=1)
-            room_seg.append(seg[i].cpu().numpy())
-            room_pred.append(pred[i].cpu().numpy())
+            room_seg.append(seg[i].npu().numpy())
+            room_pred.append(pred[i].npu().numpy())
             f = open('outputs/'+args.exp_name+'/'+'visualization'+'/'+'area_'+test_area+'/'+roomname+'/'+roomname+'.txt', "a")
             f_gt = open('outputs/'+args.exp_name+'/'+'visualization'+'/'+'area_'+test_area+'/'+roomname+'/'+roomname+'_gt.txt', "a")
             np.savetxt(f, xyzRGB, fmt='%s', delimiter=' ')
@@ -205,8 +205,8 @@ def train(args, io):
             pred = seg_pred.max(dim=2)[1]               # (batch_size, num_points)
             count += batch_size
             train_loss += loss.item() * batch_size
-            seg_np = seg.cpu().numpy()                  # (batch_size, num_points)
-            pred_np = pred.detach().cpu().numpy()       # (batch_size, num_points)
+            seg_np = seg.npu().numpy()                  # (batch_size, num_points)
+            pred_np = pred.detach().npu().numpy()       # (batch_size, num_points)
             train_true_cls.append(seg_np.reshape(-1))       # (batch_size * num_points)
             train_pred_cls.append(pred_np.reshape(-1))      # (batch_size * num_points)
             train_true_seg.append(seg_np)
@@ -255,8 +255,8 @@ def train(args, io):
             pred = seg_pred.max(dim=2)[1]
             count += batch_size
             test_loss += loss.item() * batch_size
-            seg_np = seg.cpu().numpy()
-            pred_np = pred.detach().cpu().numpy()
+            seg_np = seg.npu().numpy()
+            pred_np = pred.detach().npu().numpy()
             test_true_cls.append(seg_np.reshape(-1))
             test_pred_cls.append(pred_np.reshape(-1))
             test_true_seg.append(seg_np)
@@ -325,8 +325,8 @@ def test(args, io):
                     seg_pred = model(data)
                 seg_pred = seg_pred.permute(0, 2, 1).contiguous()
                 pred = seg_pred.max(dim=2)[1]
-                seg_np = seg.cpu().numpy()
-                pred_np = pred.detach().cpu().numpy()
+                seg_np = seg.npu().numpy()
+                pred_np = pred.detach().npu().numpy()
                 test_true_cls.append(seg_np.reshape(-1))
                 test_pred_cls.append(pred_np.reshape(-1))
                 test_true_seg.append(seg_np)

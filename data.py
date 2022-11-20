@@ -339,7 +339,7 @@ class ShapeNetPart(Dataset):
         return self.data.shape[0]
 
 class S3DISDataset(Dataset):
-    def __init__(self, split='train', data_root='dataset', num_point=4096, test_area=5, block_size=1.0, sample_rate=1.0, transform=None):
+    def __init__(self, split='train', data_root='', num_point=4096, test_area=5, block_size=1.0, sample_rate=1.0, transform=None):
         super().__init__()
         self.num_point = num_point
         self.block_size = block_size
